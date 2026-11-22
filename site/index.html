@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>HERMES WORKFORGE — observability for autonomous AI work</title>
+<meta name="description" content="One event stream. One source of truth. Every interface. Mission control for multi-worker AI operations."/>
+<meta property="og:title" content="HERMES WORKFORGE"/>
+<meta property="og:description" content="Cross-platform observability and control for autonomous AI work."/>
+<meta property="og:type" content="website"/>
+<style>
+:root{--bg:#080c18;--panel:#101831;--cyan:#38bdf8;--violet:#a78bfa;--ink:#e6edff;--muted:#8a9ac2}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1000px 600px at 70% -10%,#1b2450 0,transparent 60%),var(--bg);color:var(--ink);font:16px/1.6 ui-sans-serif,system-ui,"Segoe UI",sans-serif}
+.wrap{max-width:1040px;margin:auto;padding:56px 24px}
+header{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+header img{width:92px;filter:drop-shadow(0 0 22px #38bdf855)}
+h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:0;letter-spacing:-.03em}
+h1 span{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+p.sub{color:var(--muted);max-width:640px;font-size:1.12rem}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 34px}
+.badge{background:#16204288;border:1px solid #2b3a66;border-radius:999px;padding:5px 13px;font-size:.78rem;color:#bcd0ff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:28px 0}
+.card{background:linear-gradient(160deg,#131d3c,#0d1428);border:1px solid #263560;border-radius:16px;padding:20px}
+.card h3{margin:0 0 8px;font-size:1rem;color:var(--cyan)}.card p{margin:0;color:var(--muted);font-size:.92rem}
+pre{background:#060a14;border:1px solid #233058;border-radius:14px;padding:18px;overflow:auto;color:#b8e6ff;font-size:.84rem}
+code{font-family:ui-monospace,Cascadia Code,Consolas,monospace}
+a{color:var(--cyan)}footer{margin-top:44px;color:#60709c;font-size:.82rem}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;background:#1d2c55;color:#9fd8ff;font-size:.75rem}
+</style></head>
+<body><div class="wrap">
+<header><img src="../assets/workforge.svg" alt="Workforge mark"/><div>
+<h1>HERMES <span>WORKFORGE</span></h1>
+<div class="sub">Cross-platform observability & control for autonomous AI work.</div></div></header>
+
+<div class="badges"><span class="badge">● 13/13 tests passing</span><span class="badge">event schema v1.0</span><span class="badge">Python 3.11+</span><span class="badge">MIT</span></div>
+
+<p class="sub"><strong>One event stream. One source of truth. Every interface.</strong> Workers emit structured
+events; a local collector owns the state; CLI, Discord, Webapp and Desktop render the same snapshot.
+Progress is computed from completed task weights and verified evidence — never from elapsed time.</p>
+
+<div class="grid">
+<div class="card"><h3>◈ Durable by design</h3><p>Events hit disk with fsync before any HTTP call. Disconnect Discord, close the terminal — events are replayed on reconnect.</p></div>
+<div class="card"><h3>✓ Proof of work</h3><p>claimed → implemented → verified → committed → pushed are distinct. A green light needs evidence, not a claim.</p></div>
+<div class="card"><h3>⌁ Attention, not spam</h3><p>Blocked and stalled workers surface immediately. Long tool calls are legitimate: investigate, never auto-kill.</p></div>
+<div class="card"><h3>▤ Session replay</h3><p>Every event is stored. Rewind the whole operation and see exactly how the agents got there.</p></div>
+</div>
+
+<h2>Three terminals to mission control</h2>
+<pre><code>workforge serve                      <span style="color:#5f739f"># collector · 127.0.0.1:8765</span>
+python examples/demo_session.py      <span style="color:#5f739f"># 5 projects, 48 events</span>
+workforge monitor                    <span style="color:#5f739f"># live Rich dashboard</span></code></pre>
+
+<p><a href="https://github.com/Chimthuwu/hermes-workforge">View the repository →</a>
+&nbsp; <span class="tag">Phase 1 + 2 shipped</span> <span class="tag">Phase 3 Discord next</span></p>
+
+<footer>MIT © 2026 Chimthuwu · Built for the Hermes multi-worker workflow.</footer>
+</div></body></html>
