@@ -24,6 +24,15 @@ output) next to each completed item. Grand-scheme backlog stays in `Z:/HERMES/.h
 - [x] Verified end to end: demo → collector → snapshot (93.3% overall, 4 verified, 4 committed,
       1 critical attention) → 48-event replay → CLI snapshot + replay render → WebSocket history
 
+## Packaging ✅ SHIPPED 2026-11-23
+
+- [x] Unique generated mark: `assets/workforge.svg` + `scripts/make_icon.py` → PNG 16-512px and multi-size ICO
+- [x] Self-contained `site/` with local favicon; deployed with `wrangler deploy` to
+      **https://hermes-workforge.nyan-anonymous-d45.workers.dev** (HTTP 200, favicon 200 verified)
+- [x] Desktop shortcut `HERMES WORKFORGE - Mission Control.lnk` created and verified (stable Python 3.11, correct args + icon)
+- [x] Public repo `Chimthuwu/hermes-workforge`, commit `f2066b3` pushed
+- [x] No Electron wrapper: native desktop target is existing Hermes Desktop (Phase 5)
+
 ## Phase 3 — Discord adapter ⬜ NEXT
 
 - [ ] Optional `discord.py` extra; one adapter aggregates events (never one message per worker)

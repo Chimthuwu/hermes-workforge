@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hermes-workforge",
+  "compatibility_date": "2026-11-23",
+  "assets": {
+    "directory": "./site"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

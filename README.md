@@ -13,6 +13,8 @@
 
 **One event stream. One source of truth. Every interface.**
 
+🌐 [Live landing page](https://hermes-workforge.nyan-anonymous-d45.workers.dev) · ⭐ [GitHub repo](https://github.com/Chimthuwu/hermes-workforge)
+
 </div>
 
 ---
@@ -188,9 +190,20 @@ workforce/
 examples/
   demo_session.py   5-project demo with one deliberately blocked worker
 tests/              13 unittest tests (no extra test dependency)
-assets/             SVG mark
-site/               static landing page (Cloudflare Pages ready)
+assets/             generated mark: SVG + PNG/ICO at 16-512px
+site/               static landing page (self-contained, with its own favicon)
+scripts/make_icon.py  reproducible icon generator (Pillow)
+wrangler.jsonc      Workers static-assets deploy config
 ```
+
+## Desktop shortcut
+
+A verified **HERMES WORKFORGE - Mission Control** shortcut on the Desktop launches
+`python -m workforce monitor` from this folder using the stable system Python 3.11 and the
+generated `.ico`. It quits the view with `Q` — it never stops a worker.
+
+No separate Electron wrapper was built on purpose: Workforge's desktop target is the existing
+Hermes Desktop app (Phase 5), not a fourth independent interface.
 
 ## Security
 
