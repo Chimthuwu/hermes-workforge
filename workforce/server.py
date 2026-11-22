@@ -52,6 +52,12 @@ class PlanRequest(BaseModel):
     project_id: str
 
 
+class PlatformMessageRequest(BaseModel):
+    platform: str = "discord"
+    message_id: str
+    thread_id: str | None = None
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     get_store()
@@ -96,6 +102,8 @@ async def health() -> dict[str, Any]:
 
 @app.websocket("/stream")
 async def event_stream(ws: WebSocket, session_id: str | None = None) -> None:
+    if session_id == "latest":
+        session_id = None
     await ws.accept()
     q: asyncio.Queue = asyncio.Queue(maxsize=200)
     _subscribers.add(q)
@@ -163,6 +171,20 @@ async def control(session_id: str, body: ControlRequest) -> dict[str, Any]:
 @app.get("/api/sessions/{session_id}/controls")
 async def controls(session_id: str) -> dict[str, Any]:
     return get_store().snapshot(session_id).get("controls", [])
+
+
+@app.get("/api/sessions/{session_id}/platform-messages")
+async def platform_messages(session_id: str) -> list[dict[str, Any]]:
+    return get_store().get_platform_messages(session_id)
+
+
+@app.put("/api/sessions/{session_id}/platform-messages")
+async def remember_platform_message(session_id: str,
+                                    body: PlatformMessageRequest) -> dict[str, Any]:
+    get_store().set_platform_message(session_id, body.platform, body.message_id,
+                                     body.thread_id)
+    return {"session_id": session_id, "platform": body.platform,
+            "message_id": body.message_id, "thread_id": body.thread_id}
 
 
 @app.get("/api/attention")

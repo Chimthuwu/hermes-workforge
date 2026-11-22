@@ -217,6 +217,12 @@ class Store:
             )
             self.conn.commit()
 
+    def get_platform_messages(self, session_id: str) -> list[dict]:
+        with self._lock:
+            rows = self.conn.execute(
+                "SELECT * FROM platform_messages WHERE session_id=?", (session_id,)).fetchall()
+        return [dict(r) for r in rows]
+
     # -- reads -----------------------------------------------------------
     def list_sessions(self) -> list[dict]:
         with self._lock:

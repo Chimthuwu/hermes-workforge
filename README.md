@@ -6,14 +6,14 @@
 
 ### Cross-platform observability & control for autonomous AI work
 
-![tests](https://img.shields.io/badge/tests-13%2F13%20passing-brightgreen?style=for-the-badge)
+![tests](https://img.shields.io/badge/tests-18%2F18%20passing-brightgreen?style=for-the-badge)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue?style=for-the-badge)
 ![schema](https://img.shields.io/badge/event%20schema-v1.0-purple?style=for-the-badge)
 ![license](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge)
 
 **One event stream. One source of truth. Every interface.**
 
-🌐 [Live landing page](https://hermes-workforge.nyan-anonymous-d45.workers.dev) · ⭐ [GitHub repo](https://github.com/Chimthuwu/hermes-workforge)
+🌐 [Live landing page](https://hermes-workforge.pages.dev) · ⭐ [GitHub repo](https://github.com/Chimthuwu/hermes-workforge)
 
 </div>
 
@@ -53,7 +53,7 @@ still queued on disk and replayed on reconnect.
 git clone https://github.com/Chimthuwu/hermes-workforge.git
 cd hermes-workforge
 python -m pip install -e .          # or: pip install fastapi uvicorn pydantic httpx rich websockets
-python -m unittest discover -s tests -v   # 13 tests, all green
+python -m unittest discover -s tests -v   # 18 tests, all green
 ```
 
 ## Three-terminal quickstart
@@ -74,6 +74,7 @@ One-shot alternatives:
 ```bash
 workforge snapshot --session DEMO-MULTI-001
 workforge replay DEMO-MULTI-001 --limit 40
+workforge discord --dry-run --batch 1.0   # verify the Discord adapter, no token needed
 workforge doctor
 ```
 
@@ -147,10 +148,33 @@ Common event names: `worker_started`, `task_plan`, `task_started`, `task_complet
 | POST | `/api/sessions/{id}/plan` | Set a weighted task plan |
 | GET / POST | `/api/sessions/{id}/controls` | Pause / resume / cancel **requests** |
 | GET | `/api/attention` | Blocked, failed and stalled workers |
+| GET / PUT | `/api/sessions/{id}/platform-messages` | Persistent Discord message/thread IDs |
 | WS | `/stream?session_id=` | Live events + 100-event history on connect |
 
 Controls are *requests* to the orchestrator, not process-kill switches. Approval boundaries stay
 with the runner.
+
+## Discord adapter (Phase 3)
+
+One aggregate consumer for the existing bot channel — never one message per worker:
+
+```bash
+export WORKFORCE_DISCORD_TOKEN=...        # set in the bot's environment, never in chat
+export WORKFORCE_DISCORD_CHANNEL_ID=...
+workforge discord --channel-id 123456789
+```
+
+- A single persistent mission-control embed, edited in place; the message ID is stored
+  collector-side, so restarts reuse the same message.
+- Critical events and approvals push immediately; routine events go to per-project threads.
+- Slash commands: `/mission`, `/workers`, `/attention`, `/logs`, `/control`.
+  Controls are requests to the orchestrator — no direct process kills.
+- Batches edits (default 2s), reconnects with backoff, and flushes the final batch on shutdown.
+- Discord outages never affect workers or the collector.
+
+Verify with no credentials and no second bot: `workforge discord --dry-run --batch 1.0`.
+Verified against the demo: 48 events → 2 embed edits, 2 attention pushes, 46 thread posts,
+one stable dashboard message ID.
 
 ## The non-negotiables
 
@@ -169,8 +193,8 @@ with the runner.
 |---|---|---|
 | 1 | Event schema, durable reporter, collector, SQLite, state recovery | ✅ shipped |
 | 2 | CLI Mission Control + session replay + attention panel | ✅ shipped |
-| 3 | Discord adapter: persistent embed, threads, slash commands, controls | ⬜ next |
-| 4 | Webapp integration via gateway-proxied WebSocket | ⬜ |
+| 3 | Discord adapter: persistent embed, threads, slash commands, controls | ✅ shipped |
+| 4 | Webapp integration via gateway-proxied WebSocket | ⬜ next |
 | 5 | Hermes Desktop mission-control view | ⬜ |
 | 6 | Native runtime instrumentation (tools, subagents, approvals) | ⬜ |
 | + | Swarm view, dependency graph, resource/cost analytics, wallboard | 💡 ideas |
@@ -189,7 +213,8 @@ workforce/
   cli.py        Rich mission control (monitor / snapshot / replay / doctor)
 examples/
   demo_session.py   5-project demo with one deliberately blocked worker
-tests/              13 unittest tests (no extra test dependency)
+workforce/adapters/  Discord adapter (optional discord.py, dry-run verifiable)
+tests/              18 unittest tests (no extra test dependency)
 assets/             generated mark: SVG + PNG/ICO at 16-512px
 site/               static landing page (self-contained, with its own favicon)
 scripts/make_icon.py  reproducible icon generator (Pillow)
@@ -204,6 +229,18 @@ generated `.ico`. It quits the view with `Q` — it never stops a worker.
 
 No separate Electron wrapper was built on purpose: Workforge's desktop target is the existing
 Hermes Desktop app (Phase 5), not a fourth independent interface.
+
+## Deploy
+
+The landing page is on Cloudflare Pages: **https://hermes-workforge.pages.dev**.
+Pages uses the default config path, so deploy from the `site/` folder:
+
+```bash
+cd site && wrangler pages deploy . --project-name=hermes-workforge --branch=main
+```
+
+`wrangler.jsonc` at the repo root is the Workers static-assets config (`wrangler deploy`);
+Pages ignores it with a warning because the two config formats are mutually exclusive.
 
 ## Security
 

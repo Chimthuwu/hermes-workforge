@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import os
 import sys
 import threading
@@ -267,6 +268,27 @@ def cmd_replay(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_discord(args: argparse.Namespace) -> int:
+    from .adapters.discord import MissionControlBot
+
+    if not args.dry_run and not os.environ.get("WORKFORCE_DISCORD_TOKEN"):
+        console.print("[red]WORKFORCE_DISCORD_TOKEN is not set.[/red] "
+                      "Set it in the bot's environment, or use [cyan]--dry-run[/cyan] "
+                      "to verify with no credentials. Never paste a token in chat.")
+        return 1
+    bot = MissionControlBot(
+        url=args.url, channel_id=args.channel_id, session_id=args.session,
+        batch_seconds=args.batch, dry_run=args.dry_run)
+    try:
+        asyncio.run(bot.start())
+    except KeyboardInterrupt:
+        pass
+    except RuntimeError as exc:
+        console.print(f"[red]{exc}[/red]")
+        return 1
+    return 0
+
+
 def cmd_doctor(args: argparse.Namespace) -> int:
     import importlib.metadata as md
     console.print("[bold bright_blue]HERMES WORKFORGE // DOCTOR[/bold bright_blue]")
@@ -320,6 +342,16 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--url", default="http://127.0.0.1:8765")
     s.add_argument("--limit", type=int, default=80)
     s.set_defaults(func=cmd_replay)
+
+    s = sub.add_parser("discord", help="run the Discord adapter for the existing bot")
+    s.add_argument("--url", default="http://127.0.0.1:8765")
+    s.add_argument("--channel-id", default=None,
+                   help="Discord channel ID (or WORKFORCE_DISCORD_CHANNEL_ID)")
+    s.add_argument("--session", default=None)
+    s.add_argument("--batch", type=float, default=2.0, help="embed edit debounce in seconds")
+    s.add_argument("--dry-run", action="store_true",
+                   help="verify the full adapter with no token and no second bot")
+    s.set_defaults(func=cmd_discord)
 
     s = sub.add_parser("doctor", help="check install and collector connectivity")
     s.add_argument("--url", default="http://127.0.0.1:8765")

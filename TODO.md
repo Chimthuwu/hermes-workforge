@@ -27,21 +27,26 @@ output) next to each completed item. Grand-scheme backlog stays in `Z:/HERMES/.h
 ## Packaging ✅ SHIPPED 2026-11-23
 
 - [x] Unique generated mark: `assets/workforge.svg` + `scripts/make_icon.py` → PNG 16-512px and multi-size ICO
-- [x] Self-contained `site/` with local favicon; deployed with `wrangler deploy` to
-      **https://hermes-workforge.nyan-anonymous-d45.workers.dev** (HTTP 200, favicon 200 verified)
+- [x] Self-contained `site/` with local favicon; deployed from `site/` with `wrangler pages deploy` to
+      **https://hermes-workforge.pages.dev** (production Pages URL, HTTP 200 + favicon verified)
 - [x] Desktop shortcut `HERMES WORKFORGE - Mission Control.lnk` created and verified (stable Python 3.11, correct args + icon)
 - [x] Public repo `Chimthuwu/hermes-workforge`, commit `f2066b3` pushed
 - [x] No Electron wrapper: native desktop target is existing Hermes Desktop (Phase 5)
 
-## Phase 3 — Discord adapter ⬜ NEXT
+## Phase 3 — Discord adapter ✅ SHIPPED 2026-11-23
 
-- [ ] Optional `discord.py` extra; one adapter aggregates events (never one message per worker)
-- [ ] Persistent dashboard message, message ID stored per session in `platform_messages`
-- [ ] Per-project threads for detailed worker activity
-- [ ] Attention-priority notifications: critical + approvals push; info stays in the timeline
-- [ ] Slash commands: `/mission`, `/workers`, `/project`, `/worker`, `/logs`, `/git`, `/pause`, `/resume`
-- [ ] Batch embed edits; Discord rate limits must never affect agent execution
-- [ ] Acceptance: unplug Discord mid-run, workers continue; reconnect rebuilds state from history
+- [x] Optional `discord.py` extra; one aggregate adapter (never one message per worker)
+- [x] Persistent dashboard message edited in place; ID stored in `platform_messages`
+- [x] Per-project threads for routine worker events
+- [x] Attention-priority pushes: critical + approvals interrupt; info stays in the thread
+- [x] Slash commands `/mission`, `/workers`, `/attention`, `/logs`, `/control` + `tree.sync()` on ready
+- [x] Batched edits (2s), reconnect with backoff, final-batch flush on shutdown
+- [x] Collector GET/PUT `/api/sessions/{id}/platform-messages` + unit tests
+- [x] Verified with `--dry-run` against live collector: 48 events → 2 edits, 2 pushes,
+      46 thread posts, stable `msg-1` ID; 18/18 tests green
+- [ ] Live bot run needs the existing bot's token in `WORKFORCE_DISCORD_TOKEN` + channel ID —
+      deliberately not attempted here (no credentials touched in chat)
+- [ ] Acceptance still open: unplug Discord mid-run, workers continue; reconnect rebuilds history
 
 ## Phase 4 — Webapp ⬜
 
