@@ -48,23 +48,37 @@ output) next to each completed item. Grand-scheme backlog stays in `Z:/HERMES/.h
       deliberately not attempted here (no credentials touched in chat)
 - [ ] Acceptance still open: unplug Discord mid-run, workers continue; reconnect rebuilds history
 
-## Phase 4 — Webapp ⬜
+## Phase 4 — Hermes web dashboard ✅ SHIPPED 2026-11-23
 
-- [ ] Gateway-proxied WebSocket (not a raw localhost socket from the browser)
-- [ ] Mission Control view, worker inspection, timeline, Git evidence, controls
-- [ ] Reuse React component so Desktop can consume it later
+- [x] Unified plugin package at `integrations/hermes-workforge/`; installed with `install.py`
+- [x] `dashboard/manifest.json` + IIFE bundle using `window.__HERMES_PLUGIN_SDK__`
+- [x] `dashboard/plugin_api.py` proxy: status/snapshot/events/attention/control
+- [x] `hermes plugins enable hermes-workforge` (official CLI, reversible), no core edits
+- [x] Verified in the real dashboard via browser: Workforge tab rendered 48 events,
+      5 projects, 93.3% progress, 1 blocked worker; backend hot-mounted, no restart
+- [ ] Gateway-proxied WebSocket streaming (currently 3s snapshot polling - deliberate,
+      keeps the plugin inside documented read-only APIs)
 
-## Phase 5 — Hermes Desktop ⬜
+## Phase 5 — Hermes Desktop ✅ SHIPPED 2026-11-23
 
-- [ ] Integrate into actual Desktop navigation/backend — a separate React app is *not* Desktop integration
-- [ ] Correlate native Hermes sessions to workers; parent/child session graph
+- [x] `desktop/plugin.js`: route `/workforge`, sidebar nav, palette command, status-bar chip
+- [x] Reads the same scoped backend via `ctx.rest('/snapshot')`; no raw fetch, no state duplication
+- [x] `hermes plugins validate` passes including its desktop-surface SDK check; JS syntax checked
+- [ ] Live render not exercised - Desktop app was not running; app copies the unified
+      half into `desktop-plugins/hermes-workforge/` on start/Rescan
 
-## Phase 6 — Native runtime instrumentation ⬜
+## Phase 6 — Native runtime instrumentation ⏸ DEFERRED (deliberate)
 
-- [ ] Inspect the installed Hermes source first: tool execution, delegation and background-process
-      lifecycle boundaries. The prototype hooks in the source conversation are **not** real signatures.
-- [ ] Emit `tool_started` / `tool_completed` / `tool_failed`, subagent lifecycle, approval lifecycle
-- [ ] Same event schema for native and external workers
+Native tool/subagent/background-process events would require changing Hermes core.
+Per the user's instruction, Workforge stays an observer of orchestration jobs and
+uses documented extension points only. Revisit if Nous publishes a structured
+native event API.
+
+## Deliberate scope calls
+
+- Gateway-proxied WebSocket streaming and a shared React component between
+  dashboard and Desktop are **not** done: both interfaces already poll one
+  shared backend (3s), which stays inside the documented SDK surfaces.
 
 ## Ideas, not commitments 💡
 

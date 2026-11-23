@@ -1,0 +1,14 @@
+{
+  "name": "hermes-workforge",
+  "label": "Workforge",
+  "description": "Live mission control for autonomous multi-worker jobs — projects, workers, attention and evidence, from one event stream.",
+  "icon": "Activity",
+  "version": "0.1.0",
+  "tab": {
+    "path": "/workforge",
+    "position": "after:skills"
+  },
+  "entry": "dist/index.js",
+  "css": "dist/style.css",
+  "api": "plugin_api.py"
+}

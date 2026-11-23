@@ -1,0 +1,11 @@
+name: hermes-workforge
+label: Hermes Workforge
+version: 0.1.0
+author: Stooge
+description: >-
+  Mission Control for autonomous work. Adds a Workforge tab to the Hermes web
+  dashboard and a Workforge page to Hermes Desktop, both fed by the local
+  Workforge collector's single event stream. The collector owns state; these
+  interfaces only observe it and forward control requests.
+provides_tools: []
+provides_hooks: []

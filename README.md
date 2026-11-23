@@ -6,7 +6,7 @@
 
 ### Cross-platform observability & control for autonomous AI work
 
-![tests](https://img.shields.io/badge/tests-18%2F18%20passing-brightgreen?style=for-the-badge)
+![tests](https://img.shields.io/badge/tests-23%2F23%20passing-brightgreen?style=for-the-badge)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue?style=for-the-badge)
 ![schema](https://img.shields.io/badge/event%20schema-v1.0-purple?style=for-the-badge)
 ![license](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge)
@@ -53,7 +53,7 @@ still queued on disk and replayed on reconnect.
 git clone https://github.com/Chimthuwu/hermes-workforge.git
 cd hermes-workforge
 python -m pip install -e .          # or: pip install fastapi uvicorn pydantic httpx rich websockets
-python -m unittest discover -s tests -v   # 18 tests, all green
+python -m unittest discover -s tests -v   # 23 tests, all green
 ```
 
 ## Three-terminal quickstart
@@ -194,7 +194,7 @@ one stable dashboard message ID.
 | 1 | Event schema, durable reporter, collector, SQLite, state recovery | ✅ shipped |
 | 2 | CLI Mission Control + session replay + attention panel | ✅ shipped |
 | 3 | Discord adapter: persistent embed, threads, slash commands, controls | ✅ shipped |
-| 4 | Webapp integration via gateway-proxied WebSocket | ⬜ next |
+| 4 | Hermes web dashboard integration (official plugin SDK) | ✅ shipped |
 | 5 | Hermes Desktop mission-control view | ⬜ |
 | 6 | Native runtime instrumentation (tools, subagents, approvals) | ⬜ |
 | + | Swarm view, dependency graph, resource/cost analytics, wallboard | 💡 ideas |
@@ -214,6 +214,7 @@ workforce/
 examples/
   demo_session.py   5-project demo with one deliberately blocked worker
 workforce/adapters/  Discord adapter (optional discord.py, dry-run verifiable)
+integrations/        Unified Hermes plugin: dashboard tab + Desktop page
 tests/              18 unittest tests (no extra test dependency)
 assets/             generated mark: SVG + PNG/ICO at 16-512px
 site/               static landing page (self-contained, with its own favicon)
@@ -241,6 +242,45 @@ cd site && wrangler pages deploy . --project-name=hermes-workforge --branch=main
 
 `wrangler.jsonc` at the repo root is the Workers static-assets config (`wrangler deploy`);
 Pages ignores it with a warning because the two config formats are mutually exclusive.
+
+## Hermes integrations (official plugin SDKs)
+
+One **unified Hermes plugin package** feeds both existing Hermes interfaces.
+No Hermes core source is edited, no second bot or app is spawned, and neither
+interface computes its own progress — both read the collector.
+
+```bash
+python integrations/hermes-workforge/install.py   # files only, into $HERMES_HOME/plugins/
+hermes plugins enable hermes-workforge            # official CLI; reversible with `disable`
+python -m workforge serve                         # collector on 127.0.0.1:8765
+python examples/demo_session.py --fast            # optional demo data
+```
+
+| Surface | Where | What it shows |
+|---|---|---|
+| Web dashboard | Plugins → **Workforge** (`/workforge`) | Stats, projects with evidence badges, attention, live event stream, control requests |
+| Desktop | Sidebar → **Workforge** (`/workforge`), ⌘K command, status-bar chip | Same snapshot, polled through `ctx.rest` |
+
+The Python half (`dashboard/plugin_api.py`) is a thin proxy to the collector at
+`WORKFORCE_URL` (default `http://127.0.0.1:8765`). It exposes `/status`,
+`/snapshot`, `/events`, `/attention` and `/control` under the plugin's own
+scoped namespace `/api/plugins/hermes-workforge/`. Controls are recorded as
+requests for the orchestrator — never direct process kills. A dead collector
+produces an offline banner; workers and events are unaffected.
+
+Verified: `hermes plugins validate` passes (including its desktop-surface
+check); dashboard plugin hot-mounted without a restart and rendered real
+collector data in the browser (48 events, 5 projects, 1 blocked worker);
+plugin backend passed live TestClient checks; 23/23 tests.
+
+`hermes plugins enable` reloads the gateway, which can stop a manually started
+`hermes dashboard`. Restore it with `hermes dashboard --port 9119 --skip-build --no-open`.
+Desktop copies the unified package's `desktop/plugin.js` into
+`desktop-plugins/hermes-workforge/` on app start / Rescan; live Desktop render
+was not exercised here because the app was not running.
+
+Remove cleanly with `python integrations/hermes-workforge/install.py --uninstall`
+then `hermes plugins disable hermes-workforge`.
 
 ## Security
 
